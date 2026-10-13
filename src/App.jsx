@@ -3,8 +3,8 @@ import { AnimatePresence } from 'framer-motion'
 import RibbonCarousel from './components/RibbonCarousel'
 import ScatteredGallery from './components/ScatteredGallery'
 import Sketchbook from './components/Sketchbook'
-import StarlightGalaxy from './components/StarlightGalaxy'
 import BirthdayFinale from './components/BirthdayFinale'
+import ForeverPage from './components/ForeverPage'
 
 const ImageModal = lazy(() => import('./components/ImageModal'))
 
@@ -141,8 +141,8 @@ export default function App() {
       {/* ── Act 4: Intimacy — Interactive Sketchbook ── */}
       <Sketchbook onPhotoClick={handlePhotoClick} />
 
-      {/* ── Act 5: Cosmos — Starlight Galaxy ── */}
-      <StarlightGalaxy />
+      {/* ── Act 5: Epilogue — Forever & Always (Wobble Fence Three.js background) ── */}
+      <ForeverPage />
 
       {/* ── Full-screen Image Modal (Lazy Loaded) ── */}
       <AnimatePresence>

@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef, memo } from 'react'
 import { motion, AnimatePresence, useSpring } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { PHOTOS } from '../photosData'
+import WaveRibbons from './WaveRibbons'
 
 /* ═══════════════════════════════════════════════════════════
    ASSET PATHS
@@ -1518,7 +1519,12 @@ function Sketchbook({ onPhotoClick }) {
 
   return (
     <section className="sketchbook-section relative" id="sketchbook-section">
-
+      {/* Wave Ribbons Background (Originkit) */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <WaveRibbons
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+        />
+      </div>
 
       {/* Section Title */}
       <motion.div
@@ -1537,7 +1543,7 @@ function Sketchbook({ onPhotoClick }) {
           fontWeight: 300,
           fontStyle: 'italic',
         }}>
-          Our Memory Book
+          Memory Box
         </h2>
         <p style={{
           fontFamily: 'var(--font-sans)',
