@@ -5,6 +5,7 @@ import ScatteredGallery from './components/ScatteredGallery'
 import Sketchbook from './components/Sketchbook'
 import BirthdayFinale from './components/BirthdayFinale'
 import ForeverPage from './components/ForeverPage'
+import AudioPlayer from './components/AudioPlayer'
 
 const ImageModal = lazy(() => import('./components/ImageModal'))
 
@@ -122,6 +123,9 @@ export default function App() {
 
       {/* Scroll Progress Bar */}
       <div ref={progressRef} className="scroll-progress" />
+
+      {/* Ambient Audio Player */}
+      <AudioPlayer />
 
       {/* ── Act 1: Birthday Celebration & Finale ── */}
       <BirthdayFinale />
