@@ -592,6 +592,7 @@ export default function SphereGallery3D(props) {
 
   React.useEffect(() => {
     let alive = true
+    const graveyard = graveyardRef.current
     const loaded = items.map(() => ({
       image: null,
       aspect: 1,
@@ -619,15 +620,17 @@ export default function SphereGallery3D(props) {
     return () => {
       alive = false
       loaded.forEach((l) => {
-        if (l.texture) graveyardRef.current.push(l.texture)
+        if (l.texture && graveyard) graveyard.push(l.texture)
         l.texture = null
       })
     }
-  }, [mediaKey])
+  }, [mediaKey, items])
 
   React.useEffect(() => {
     const canvas = canvasRef.current
     const host = hostRef.current
+    const graveyard = graveyardRef.current
+    const media = mediaRef.current
     if (!canvas || !host) return
 
     const attrs = {
@@ -1322,12 +1325,14 @@ export default function SphereGallery3D(props) {
       gl.deleteBuffer(ballEdge)
       gl.deleteBuffer(lineBuf)
       gl.deleteTexture(white)
-      mediaRef.current.forEach((m) => {
-        if (m.texture) gl.deleteTexture(m.texture)
-        m.texture = null
-      })
-      while (graveyardRef.current.length) {
-        gl.deleteTexture(graveyardRef.current.pop())
+      if (media) {
+        media.forEach((m) => {
+          if (m.texture) gl.deleteTexture(m.texture)
+          m.texture = null
+        })
+      }
+      while (graveyard && graveyard.length) {
+        gl.deleteTexture(graveyard.pop())
       }
       gl.deleteProgram(quadProg)
       gl.deleteProgram(solidProg)

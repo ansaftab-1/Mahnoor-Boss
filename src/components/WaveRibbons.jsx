@@ -312,14 +312,9 @@ const __originkitPresetProps = {
   },
 }
 
-function __OriginkitBase_WAVEES(props) {
+function OriginKitBaseWavees(props) {
   const {
     background = '#000000',
-    baseColor = '#A96CFF',
-    accentColor = '#3DFF00',
-    speed = 50,
-    scale = 300,
-    hover = 200,
     style,
     className,
   } = props
@@ -499,7 +494,7 @@ function __OriginkitBase_WAVEES(props) {
 }
 
 function WaveRibbons(props) {
-  return <__OriginkitBase_WAVEES {...__originkitPresetProps} {...props} />
+  return <OriginKitBaseWavees {...__originkitPresetProps} {...props} />
 }
 
 export default memo(WaveRibbons)
