@@ -1,7 +1,8 @@
 {
-  "name": "mahn",
+  "name": "cinematic-birthday-scrapbook",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A cinematic, interactive 3D birthday celebration & memory scrapbook web experience built with React 19, Three.js, WebGL shaders, Tailwind CSS, and Framer Motion.",
   "type": "module",
   "scripts": {
     "dev": "vite",
