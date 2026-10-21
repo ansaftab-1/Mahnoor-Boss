@@ -26,23 +26,6 @@ An immersive, cinematic birthday celebration and interactive memory scrapbook ex
 
 ---
 
-## 🎵 Ambient & Interactive Features
-
-- **🎹 Ambient Serenade Synthesizer (`AudioPlayer.jsx`)**:
-  - Warm synthesized romantic chords and chimes built natively via Web Audio API.
-  - Zero external sound asset dependencies with guaranteed offline compatibility.
-  - Real-time animated audio wave equalizer, volume slider, and mute toggles.
-- **💌 Wishes & Love Notes Guestbook (`BirthdayWishesModal.jsx`)**:
-  - Interactive guestbook to read pre-loaded love letters and compose custom birthday notes.
-  - Mood badges (`💖 Love`, `🎂 Birthday`, `✨ Magic`, `🌸 Sweet`, `🥂 Cheers`).
-  - Persistent storage in `localStorage` and celebratory confetti cannon.
-- **✨ Golden Sparkle Cursor Trail (`SparkleTrail.jsx`)**:
-  - Fairy dust twinkling particle trails following pointer movement with automatic 60 FPS throttling and reduced-motion support.
-- **🧭 Quick Navigation Dock (`NavigationDock.jsx`)**:
-  - Glassmorphic floating dock that automatically tracks scroll progress and allows smooth jumping between all 5 acts.
-
----
-
 ## 🛠️ Tech Stack
 
 - **Framework**: [React 19](https://react.dev/)
@@ -106,16 +89,12 @@ npm run preview
 ├── src/
 │   ├── assets/             # Branding and SVG assets
 │   ├── components/
-│   │   ├── AudioPlayer.jsx              # Ambient Web Audio melody synthesizer
 │   │   ├── BirthdayFinale.jsx           # Act 1: Grand opening & watercolor celebration
-│   │   ├── BirthdayWishesModal.jsx      # Interactive wishes guestbook & note creator
 │   │   ├── ForeverPage.jsx              # Act 5: Epilogue container
 │   │   ├── ImageModal.jsx               # High-res photo lightbox modal
-│   │   ├── NavigationDock.jsx           # Floating section navigation dock
 │   │   ├── RibbonCarousel.jsx           # Act 2: Continuous memory ribbon
 │   │   ├── ScatteredGallery.jsx         # Act 3: Polaroid memory wall
 │   │   ├── Sketchbook.jsx               # Act 4: Interactive flipbook sketchbook
-│   │   ├── SparkleTrail.jsx             # Fairy dust sparkle cursor trail
 │   │   ├── SphereGallery3D.jsx          # Interactive WebGL 3D photo sphere
 │   │   ├── WatercolorGoldBackground.jsx # Animated canvas watercolor background
 │   │   ├── WaveRibbons.jsx              # WebGL fluid ribbon effects

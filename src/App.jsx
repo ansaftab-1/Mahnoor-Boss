@@ -5,10 +5,6 @@ import ScatteredGallery from './components/ScatteredGallery'
 import Sketchbook from './components/Sketchbook'
 import BirthdayFinale from './components/BirthdayFinale'
 import ForeverPage from './components/ForeverPage'
-import AudioPlayer from './components/AudioPlayer'
-import BirthdayWishesModal from './components/BirthdayWishesModal'
-import NavigationDock from './components/NavigationDock'
-import SparkleTrail from './components/SparkleTrail'
 
 const ImageModal = lazy(() => import('./components/ImageModal'))
 
@@ -69,7 +65,6 @@ const ContinuousMemoriesBackground = memo(function ContinuousMemoriesBackground(
 
 export default function App() {
   const [selectedPhoto, setSelectedPhoto] = useState(null)
-  const [isWishesOpen, setIsWishesOpen] = useState(false)
   const progressRef = useRef(null)
 
   const handlePhotoClick = useCallback((photo) => {
@@ -125,17 +120,8 @@ export default function App() {
       {/* Global fine parchment texture (seamless across all sections) */}
       <div className="film-grain" />
 
-      {/* Golden Fairy Dust Cursor Trail */}
-      <SparkleTrail />
-
       {/* Scroll Progress Bar */}
       <div ref={progressRef} className="scroll-progress" />
-
-      {/* Quick Acts Navigation Dock */}
-      <NavigationDock />
-
-      {/* Ambient Audio Player */}
-      <AudioPlayer />
 
       {/* ── Act 1: Birthday Celebration & Finale ── */}
       <BirthdayFinale />
@@ -170,22 +156,6 @@ export default function App() {
           </Suspense>
         )}
       </AnimatePresence>
-
-      {/* Floating Birthday Wishes & Notes Button */}
-      <button
-        onClick={() => setIsWishesOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-amber-600/90 to-amber-700/90 hover:from-amber-500 hover:to-amber-600 text-amber-50 font-medium text-xs tracking-wider uppercase shadow-[0_8px_25px_rgba(180,120,40,0.4)] border border-amber-300/40 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
-        aria-label="Open Birthday Wishes and Notes"
-      >
-        <span className="text-base leading-none">💌</span>
-        <span>Wishes & Letters</span>
-      </button>
-
-      {/* Birthday Wishes & Love Notes Modal */}
-      <BirthdayWishesModal
-        isOpen={isWishesOpen}
-        onClose={() => setIsWishesOpen(false)}
-      />
     </main>
   )
 }
