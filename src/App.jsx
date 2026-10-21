@@ -7,6 +7,8 @@ import BirthdayFinale from './components/BirthdayFinale'
 import ForeverPage from './components/ForeverPage'
 import AudioPlayer from './components/AudioPlayer'
 import BirthdayWishesModal from './components/BirthdayWishesModal'
+import NavigationDock from './components/NavigationDock'
+import SparkleTrail from './components/SparkleTrail'
 
 const ImageModal = lazy(() => import('./components/ImageModal'))
 
@@ -123,8 +125,14 @@ export default function App() {
       {/* Global fine parchment texture (seamless across all sections) */}
       <div className="film-grain" />
 
+      {/* Golden Fairy Dust Cursor Trail */}
+      <SparkleTrail />
+
       {/* Scroll Progress Bar */}
       <div ref={progressRef} className="scroll-progress" />
+
+      {/* Quick Acts Navigation Dock */}
+      <NavigationDock />
 
       {/* Ambient Audio Player */}
       <AudioPlayer />
