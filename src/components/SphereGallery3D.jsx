@@ -524,6 +524,8 @@ function link(gl, vertSrc, fragSrc) {
 export default function SphereGallery3D(props) {
   const {
     images = DEFAULT_ITEMS,
+    items: itemsProp,
+    videos: videosProp,
     branches: branchesProp = 28,
     background = 'transparent',
     scale = 65,
@@ -536,10 +538,15 @@ export default function SphereGallery3D(props) {
     core = { coreSize: 22, coreColor: '#F5D06180', lineColor: '#F5D06159' },
     className,
     style,
+    onItemClick,
   } = props
 
-  const items = images && images.length ? images : DEFAULT_ITEMS
+  const rawItems = itemsProp || videosProp || images
+  const items = rawItems && rawItems.length ? rawItems : DEFAULT_ITEMS
   const branches = clamp(Math.round(branchesProp), 1, MAX_BRANCHES)
+
+  const onItemClickRef = React.useRef(onItemClick)
+  onItemClickRef.current = onItemClick
 
   const hostRef = React.useRef(null)
   const canvasRef = React.useRef(null)
@@ -586,7 +593,16 @@ export default function SphereGallery3D(props) {
   const mediaRef = React.useRef([])
   const graveyardRef = React.useRef([])
   const mediaKey = React.useMemo(
-    () => items.map((it) => it?.image || '').join('|'),
+    () =>
+      items
+        .map(
+          (it) =>
+            it?.video ||
+            it?.src ||
+            it?.image ||
+            ''
+        )
+        .join('|'),
     [items]
   )
 
@@ -595,14 +611,51 @@ export default function SphereGallery3D(props) {
     const graveyard = graveyardRef.current
     const loaded = items.map(() => ({
       image: null,
-      aspect: 1,
+      video: null,
+      aspect: 0.65,
       texture: null,
       applied: false,
+      isVideo: false,
     }))
     mediaRef.current = loaded
 
     items.forEach((item, i) => {
-      const url = item?.image
+      const videoSrc =
+        item?.video ||
+        (typeof item?.src === 'string' && /\.(mp4|webm|mov)(\?.*)?$/i.test(item.src) ? item.src : null) ||
+        (typeof item?.image === 'string' && /\.(mp4|webm|mov)(\?.*)?$/i.test(item.image) ? item.image : null)
+
+      if (videoSrc) {
+        const vid = document.createElement('video')
+        vid.src = videoSrc
+        vid.crossOrigin = 'anonymous'
+        vid.loop = true
+        vid.muted = true
+        vid.defaultMuted = true
+        vid.playsInline = true
+        vid.autoplay = true
+        vid.preload = 'auto'
+        vid.setAttribute('playsinline', '')
+        vid.setAttribute('webkit-playsinline', '')
+        vid.setAttribute('muted', '')
+        vid.setAttribute('loop', '')
+        vid.setAttribute('autoplay', '')
+
+        vid.onloadedmetadata = () => {
+          if (!alive) return
+          if (vid.videoWidth && vid.videoHeight) {
+            loaded[i].aspect = vid.videoWidth / vid.videoHeight
+          }
+        }
+
+        vid.play().catch(() => {})
+
+        loaded[i].video = vid
+        loaded[i].isVideo = true
+        return
+      }
+
+      const url = item?.image || item?.src
       if (!url) return
       const img = new Image()
 
@@ -617,9 +670,26 @@ export default function SphereGallery3D(props) {
       img.src = url
     })
 
+    const unlockVideos = () => {
+      loaded.forEach((l) => {
+        if (l.video && l.video.paused) {
+          l.video.play().catch(() => {})
+        }
+      })
+    }
+    window.addEventListener('pointerdown', unlockVideos, { passive: true })
+    window.addEventListener('touchstart', unlockVideos, { passive: true })
+
     return () => {
       alive = false
+      window.removeEventListener('pointerdown', unlockVideos)
+      window.removeEventListener('touchstart', unlockVideos)
       loaded.forEach((l) => {
+        if (l.video) {
+          l.video.pause()
+          l.video.removeAttribute('src')
+          l.video.load()
+        }
         if (l.texture && graveyard) graveyard.push(l.texture)
         l.texture = null
       })
@@ -768,6 +838,30 @@ export default function SphereGallery3D(props) {
       } else {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
       }
+      return tex
+    }
+
+    const initVideoTex = () => {
+      const tex = gl.createTexture()
+      if (!tex) return null
+      gl.bindTexture(gl.TEXTURE_2D, tex)
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        isGL2 ? gl.SRGB8_ALPHA8 : gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        new Uint8Array([20, 15, 25, 255])
+      )
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
       return tex
     }
 
@@ -941,9 +1035,15 @@ export default function SphereGallery3D(props) {
         setNdc(e)
         buildRay(camDist, (FOV * Math.PI) / 180, vw / vh)
         const idx = hitTest(frameBasis)
-        const url = idx >= 0 ? linksRef.current[idx] : ''
-        if (url) {
-          window.open(url, '_blank', 'noopener,noreferrer')
+        if (idx >= 0) {
+          const item = items[idx % items.length]
+          if (onItemClickRef.current) {
+            onItemClickRef.current(item, idx)
+          }
+          const url = linksRef.current[idx]
+          if (url) {
+            window.open(url, '_blank', 'noopener,noreferrer')
+          }
         }
       }
     }
@@ -995,6 +1095,36 @@ export default function SphereGallery3D(props) {
 
       const grave = graveyardRef.current
       while (grave.length) gl.deleteTexture(grave.pop())
+
+      // Update real-time video textures
+      for (let j = 0; j < media.length; j++) {
+        const m = media[j]
+        if (m && m.isVideo && m.video) {
+          if (!m.texture) {
+            m.texture = initVideoTex()
+          }
+          if (m.video.readyState >= 2 && m.texture) {
+            if (m.video.videoWidth && m.video.videoHeight) {
+              m.aspect = m.video.videoWidth / m.video.videoHeight
+            }
+            if (m.video.paused) {
+              m.video.play().catch(() => {})
+            }
+            gl.bindTexture(gl.TEXTURE_2D, m.texture)
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+            gl.texImage2D(
+              gl.TEXTURE_2D,
+              0,
+              isGL2 ? gl.SRGB8_ALPHA8 : gl.RGBA,
+              gl.RGBA,
+              gl.UNSIGNED_BYTE,
+              m.video
+            )
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+            m.applied = true
+          }
+        }
+      }
 
       while (nodes.length < n) nodes.push(makeNode())
       if (nodes.length > n) nodes.length = n
@@ -1255,14 +1385,14 @@ export default function SphereGallery3D(props) {
           const nd = nodes[i]
           const m = mediaFor(i)
 
-          if (m && m.image && !m.texture) {
+          if (m && !m.isVideo && m.image && !m.texture) {
             m.texture = upload(m.image)
-            m.applied = false
+            m.applied = true
             m.image = null
           }
 
           const aspectI = m?.aspect || 1
-          const hasTex = m && m.texture ? 1 : 0
+          const hasTex = m && m.texture && (m.isVideo ? m.applied : true) ? 1 : 0
           gl.bindTexture(gl.TEXTURE_2D, hasTex ? m.texture : white)
           gl.uniform1f(qLoc.uHasTex, hasTex)
 

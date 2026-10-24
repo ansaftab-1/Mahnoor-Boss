@@ -3,13 +3,23 @@ import { motion } from 'framer-motion'
 import { ChevronUp } from 'lucide-react'
 import WobbleFence from './WobbleFence'
 import SphereGallery3D from './SphereGallery3D'
-import { PHOTOS } from '../photosData'
+
+export const USER_VIDEOS = [
+  { id: 1, video: '/user-videos/video-1.mp4' },
+  { id: 2, video: '/user-videos/video-2.mp4' },
+  { id: 3, video: '/user-videos/video-3.mp4' },
+  { id: 4, video: '/user-videos/video-4.mp4' },
+  { id: 5, video: '/user-videos/video-5.mp4' },
+  { id: 6, video: '/user-videos/video-6.mp4' },
+  { id: 7, video: '/user-videos/video-7.mp4' },
+  { id: 8, video: '/user-videos/video-8.mp4' },
+]
 
 function ForeverPage() {
   const galleryItems = useMemo(
     () =>
-      PHOTOS.map((p) => ({
-        image: p.src,
+      USER_VIDEOS.map((v) => ({
+        video: v.video,
         link: '',
       })),
     []
@@ -45,31 +55,40 @@ function ForeverPage() {
         />
       </div>
 
-      {/* Floating Scroll Up Button */}
+      {/* Subtle Cosmic Radial Glow behind the constellation */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(245, 208, 97, 0.12) 0%, rgba(255, 107, 157, 0.08) 40%, transparent 80%)',
+        }}
+      />
+
+      {/* Floating Scroll Up Button Only */}
       <motion.button
         onClick={handleScrollUp}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
-        className="absolute top-6 z-20 flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-black/50 backdrop-blur-md text-amber-100/90 text-xs font-medium tracking-widest uppercase hover:bg-black/75 hover:text-amber-300 hover:border-amber-400/40 transition-all cursor-pointer pointer-events-auto shadow-lg"
+        transition={{ delay: 0.3, duration: 0.6 }}
+        className="absolute top-6 z-20 flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-black/60 backdrop-blur-md text-amber-100/90 text-xs font-medium tracking-widest uppercase hover:bg-black/85 hover:text-amber-300 hover:border-amber-400/50 transition-all cursor-pointer pointer-events-auto shadow-lg"
         aria-label="Scroll back up to memory box"
       >
         <ChevronUp size={14} className="animate-bounce" />
         <span>Return to Memory Box</span>
       </motion.button>
 
-      {/* 3D Sphere Gallery in the Middle - Prominent & Clearly Visible Size */}
+      {/* 3D Sphere Video Gallery - Clean Videos Running on Loop */}
       <div className="relative z-10 w-full h-[84vh] max-h-[850px] max-w-6xl flex items-center justify-center pointer-events-auto px-2">
         <SphereGallery3D
           images={galleryItems}
-          branches={Math.min(28, galleryItems.length * 2)}
+          branches={24}
           background="transparent"
           scale={92}
           size={38}
           speed={14}
           direction="counterclockwise"
           hover={210}
-          rounded={18}
+          rounded={16}
           core={{
             coreSize: 18,
             coreColor: '#F5D06190',
@@ -90,4 +109,3 @@ function ForeverPage() {
 }
 
 export default memo(ForeverPage)
-

@@ -709,6 +709,526 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════
+   MOBILE GALLERY — Holographic Aurora Masonry
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Register angle property for smooth GPU animation ── */
+@property --aurora-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes aurora-spin {
+  to { --aurora-angle: 360deg; }
+}
+
+/* Ambient orb blob animations */
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(30px, -20px) scale(1.1); }
+  66%  { transform: translate(-15px, 25px) scale(0.95); }
+}
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%  { transform: translate(-25px, 20px) scale(1.08); }
+  70%  { transform: translate(20px, -15px) scale(0.92); }
+}
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(18px, 22px) scale(1.12); }
+}
+@keyframes orb-drift-4 {
+  0%, 100% { transform: translate(0, 0); }
+  45%  { transform: translate(-20px, -18px) scale(1.06); }
+}
+
+/* Heart float animation */
+@keyframes aurora-heart-beat {
+  0%, 100% { transform: scale(1) rotate(-8deg); filter: drop-shadow(0 0 6px rgba(255,90,120,0.7)); }
+  50%       { transform: scale(1.22) rotate(4deg); filter: drop-shadow(0 0 12px rgba(255,90,120,1)); }
+}
+
+/* ── Gallery root container ── */
+.aurora-gallery-root {
+  position: relative;
+  padding: 10px 10px 36px;
+  overflow: visible;
+}
+
+/* ── Ambient glowing orb blobs behind everything ── */
+.aurora-orbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.aurora-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(55px);
+  opacity: 0.28;
+  will-change: transform;
+}
+
+.aurora-orb-1 {
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, #ff9a9e, #c77dff);
+  top: -40px; left: -60px;
+  animation: orb-drift-1 12s ease-in-out infinite;
+}
+.aurora-orb-2 {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, #ffd89b, #ff9a9e);
+  top: 30%; right: -50px;
+  animation: orb-drift-2 15s ease-in-out infinite;
+}
+.aurora-orb-3 {
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, #c77dff, #70a1ff);
+  bottom: 25%; left: 10%;
+  animation: orb-drift-3 18s ease-in-out infinite;
+}
+.aurora-orb-4 {
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, #ffd89b, #c77dff);
+  bottom: -30px; right: 5%;
+  animation: orb-drift-4 13s ease-in-out infinite;
+}
+
+/* ── Hero row (full-width) ── */
+.aurora-hero-row {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 8px;
+}
+
+/* ── Two-column masonry ── */
+.aurora-masonry {
+  display: flex;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+  align-items: flex-start;
+}
+
+.aurora-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Right column starts lower for stagger depth */
+.aurora-col-right {
+  margin-top: 44px;
+}
+
+/* ── Card outer wrapper: holds border + glow layers ── */
+.aurora-card-wrap {
+  position: relative;
+  border-radius: 22px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform, opacity;
+  perspective: 800px;
+}
+
+.aurora-hero {
+  width: 100%;
+  aspect-ratio: unset;
+  min-height: 300px;
+}
+
+/* ── Ambient neon glow behind card (blurred clone) ── */
+.aurora-glow-bg {
+  position: absolute;
+  inset: 4px;
+  border-radius: 20px;
+  background: conic-gradient(
+    from var(--aurora-angle, 0deg),
+    var(--aurora-colors, #ff9a9e, #ffd89b, #c77dff, #ff9a9e)
+  );
+  filter: blur(18px);
+  opacity: 0.55;
+  z-index: 0;
+  animation: aurora-spin var(--aurora-speed, 4s) linear infinite;
+  animation-delay: var(--aurora-delay, 0s);
+}
+
+/* ── Spinning conic border ring (the aurora border itself) ── */
+.aurora-border-frame {
+  position: relative;
+  z-index: 1;
+  border-radius: 22px;
+  padding: 2.5px; /* border thickness */
+  background: conic-gradient(
+    from var(--aurora-angle, 0deg),
+    var(--aurora-colors, #ff9a9e, #ffd89b, #fff, #c77dff, #ff9a9e)
+  );
+  animation: aurora-spin var(--aurora-speed, 4s) linear infinite;
+  animation-delay: var(--aurora-delay, 0s);
+  height: 100%;
+}
+
+/* ── Photo inner: glass backing + photo clip ── */
+.aurora-photo-inner {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0d0816;
+  height: 100%;
+  min-height: inherit;
+}
+
+/* ── The photo itself ── */
+.aurora-photo-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: saturate(1.12) contrast(1.06) brightness(0.88);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s ease;
+  will-change: transform;
+}
+
+.aurora-card-wrap:active .aurora-photo-img {
+  transform: scale(1.07);
+  filter: saturate(1.25) contrast(1.1) brightness(1.0);
+}
+
+/* ── Cinematic vignette: strong bottom gradient + edge darkening ── */
+.aurora-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.2) 0%, transparent 70%),
+    linear-gradient(
+      to top,
+      rgba(8, 3, 18, 0.95) 0%,
+      rgba(8, 3, 18, 0.6)  22%,
+      rgba(8, 3, 18, 0.18) 50%,
+      transparent 100%
+    );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Aurora tint bleed-through (top-left) ── */
+.aurora-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(199, 125, 255, 0.12) 0%,
+    rgba(255, 154, 158, 0.08) 30%,
+    transparent 60%
+  );
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ── Hero frosted pill badge ── */
+.aurora-hero-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 230, 200, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 210, 170, 0.35);
+  border-radius: 40px;
+  padding: 4px 13px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ffe4b5;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.8);
+}
+
+/* ── Memory number chip (top-right of every card) ── */
+.aurora-num-chip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 6;
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255, 230, 200, 0.65);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+}
+
+/* ── Caption block: bottom of card ── */
+.aurora-caption-block {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  padding: 10px 14px 13px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.aurora-title {
+  font-family: var(--font-pinyon, var(--font-script));
+  font-size: clamp(17px, 5.5vw, 24px);
+  font-style: normal;
+  color: #fff8e7;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-shadow:
+    0 2px 14px rgba(0, 0, 0, 0.95),
+    0 0  22px rgba(255, 200, 130, 0.6);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.aurora-hero .aurora-title {
+  font-size: clamp(22px, 7vw, 30px);
+}
+
+.aurora-emoji {
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7));
+}
+
+/* ── Floating heart badge ── */
+.aurora-heart-float {
+  position: absolute;
+  top: 12px;
+  right: 30px;
+  z-index: 6;
+  animation: aurora-heart-beat 3s ease-in-out infinite;
+  filter: drop-shadow(0 2px 8px rgba(255, 90, 120, 0.8));
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ═══════════════════════════════════════════════════════ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .ribbon-polaroid { width: 75px; padding: 4px 4px 13px 4px; }
+  .ribbon-polaroid-img { height: 68px; }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .ribbon-section { height: 100svh; }
+  .ribbon-polaroid { width: 64px; padding: 3px 3px 11px 3px; }
+  .ribbon-polaroid-img { height: 56px; }
+  .gallery-polaroid .gp-caption { font-size: 13px; padding: 6px 8px 8px; }
+  .galaxy-card { padding: 6px; }
+  .gallery-section { min-height: auto; }
+}
+
+/* Very small phones (≤380px) */
+@media (max-width: 380px) {
+  .aurora-gallery-root { padding: 8px 7px 28px; }
+  .aurora-masonry { gap: 6px; }
+  .aurora-col { gap: 6px; }
+  .aurora-col-right { margin-top: 36px; }
+  .aurora-hero { min-height: 250px; }
+}
+
+/* Root wrapper — padding + gap between rows */
+.editorial-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 32px;
+  width: 100%;
+  position: relative;
+}
+
+/* Each row strip */
+.editorial-row {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Individual card cell — flex child with variable flex */
+.editorial-cell {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: #1a0e1a;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Height variants */
+.editorial-cell.h-hero   { height: 300px; }
+.editorial-cell.h-tall   { height: 230px; }
+.editorial-cell.h-medium { height: 185px; }
+.editorial-cell.h-short  { height: 150px; }
+
+/* Width: full / half / third / two-thirds */
+.editorial-cell.w-full    { flex: 1 1 100%; }
+.editorial-cell.w-half    { flex: 1 1 calc(50% - 3px); }
+.editorial-cell.w-third   { flex: 1 1 calc(33% - 4px); }
+.editorial-cell.w-twothird{ flex: 1 1 calc(67% - 2px); }
+
+/* Photo — fills entire card */
+.editorial-cell img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.55s ease;
+  filter: saturate(1.1) contrast(1.05) brightness(0.92);
+  will-change: transform;
+}
+
+.editorial-cell:active img {
+  transform: scale(1.06);
+  filter: saturate(1.2) contrast(1.08) brightness(1.0);
+}
+
+/* Cinematic gradient overlay — text reads from bottom */
+.editorial-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      rgba(10, 4, 18, 0.92) 0%,
+      rgba(10, 4, 18, 0.55) 28%,
+      rgba(10, 4, 18, 0.15) 55%,
+      transparent 100%
+    );
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+/* Warm rose-gold tint stripe on left edge */
+.editorial-cell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(220, 100, 100, 0.12) 0%,
+    transparent 45%
+  );
+  z-index: 3;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Subtle border glow */
+.editorial-cell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 200, 160, 0.14);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Caption block — bottom left of card */
+.editorial-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  padding: 10px 14px 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.editorial-title {
+  font-family: var(--font-pinyon, var(--font-script));
+  font-size: clamp(16px, 5vw, 22px);
+  color: #fff6e0;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.9),
+    0 0 20px rgba(220, 160, 100, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.editorial-cell.h-hero .editorial-title {
+  font-size: clamp(20px, 6vw, 28px);
+}
+
+/* Floating heart icon */
+.editorial-heart {
+  position: absolute;
+  top: 11px;
+  right: 12px;
+  z-index: 5;
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 2px 6px rgba(220, 80, 100, 0.7));
+  animation: editHeartPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes editHeartPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.9; }
+  50%       { transform: scale(1.18); opacity: 1;   }
+}
+
+/* Number badge on hero card */
+.editorial-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  background: rgba(255, 200, 150, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 200, 150, 0.3);
+  border-radius: 30px;
+  padding: 2px 10px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffe4b5;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+}
+
+/* ═══════════════════════════════════════════════════════
    RESPONSIVE BREAKPOINTS
    ═══════════════════════════════════════════════════════ */
 
@@ -747,6 +1267,21 @@ body {
   .galaxy-card {
     padding: 6px;
   }
+
+  /* Gallery section: allow natural height on mobile (grid scrolls) */
+  .gallery-section {
+    min-height: auto;
+  }
+}
+
+/* Very small phones (<=380px): slightly tighter editorial cells */
+@media (max-width: 380px) {
+  .editorial-cell.h-hero   { height: 250px; }
+  .editorial-cell.h-tall   { height: 190px; }
+  .editorial-cell.h-medium { height: 155px; }
+  .editorial-cell.h-short  { height: 125px; }
+  .editorial-gallery { gap: 5px; padding: 6px 7px 28px; }
+  .editorial-row { gap: 5px; }
 }
 
 /* ═══════════════════════════════════════════════════════════

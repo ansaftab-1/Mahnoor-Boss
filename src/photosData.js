@@ -1,63 +1,21 @@
-/* Photos data */
+/* Real Photos data from user oxlin collection */
 export const PHOTOS = [
-  {
-    id: 1,
-    src: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=600&q=80',
-    title: 'Cutie',
-  },
-  {
-    id: 2,
-    src: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&q=80',
-    title: 'My Love',
-  },
-  {
-    id: 3,
-    src: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=600&q=80',
-    title: 'Beautiful',
-  },
-  {
-    id: 4,
-    src: 'https://images.unsplash.com/photo-1524638431109-93d95c968f03?auto=format&fit=crop&w=600&q=80',
-    title: 'Dream Girl',
-  },
-  {
-    id: 5,
-    src: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80',
-    title: 'Sunshine',
-  },
-  {
-    id: 6,
-    src: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=600&q=80',
-    title: 'Queen',
-  },
-  {
-    id: 7,
-    src: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
-    title: 'Gorgeous',
-  },
-  {
-    id: 8,
-    src: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80',
-    title: 'Princess',
-  },
-  {
-    id: 9,
-    src: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80',
-    title: 'Angel',
-  },
-  {
-    id: 10,
-    src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80',
-    title: 'Sweetheart',
-  },
-  {
-    id: 11,
-    src: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=600&q=80',
-    title: 'Lovely',
-  },
-  {
-    id: 12,
-    src: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
-    title: 'Darling',
-  },
+  { id: 1, src: '/user-images/img-1.jpeg', title: 'Cutie' },
+  { id: 2, src: '/user-images/img-2.jpeg', title: 'My Love' },
+  { id: 3, src: '/user-images/img-3.jpeg', title: 'Beautiful' },
+  { id: 4, src: '/user-images/img-4.jpeg', title: 'Dream Girl' },
+  { id: 5, src: '/user-images/img-5.jpeg', title: 'Sunshine' },
+  { id: 6, src: '/user-images/img-6.jpeg', title: 'Queen' },
+  { id: 7, src: '/user-images/img-7.jpeg', title: 'Gorgeous' },
+  { id: 8, src: '/user-images/img-8.jpeg', title: 'Princess' },
+  { id: 9, src: '/user-images/img-9.jpeg', title: 'Angel' },
+  { id: 10, src: '/user-images/img-10.jpeg', title: 'Sweetheart' },
+  { id: 11, src: '/user-images/img-11.jpeg', title: 'Lovely' },
+  { id: 12, src: '/user-images/img-12.jpeg', title: 'Darling' },
+  { id: 13, src: '/user-images/img-13.jpeg', title: 'Precious' },
+  { id: 14, src: '/user-images/img-14.jpeg', title: 'Treasure' },
+  { id: 15, src: '/user-images/img-15.jpeg', title: 'Soulmate' },
+  { id: 16, src: '/user-images/img-16.jpeg', title: 'Enchanting' },
+  { id: 17, src: '/user-images/img-17.jpeg', title: 'Adorable' },
+  { id: 18, src: '/user-images/img-18.jpeg', title: 'Forever Love' },
 ]
