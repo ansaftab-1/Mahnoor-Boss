@@ -476,14 +476,18 @@ function RibbonCarousel({ onPhotoClick, isViewerOpen = false }) {
     if (dragStartRef.current.lockedAxis === 'y') return
 
     const dt = now - lastPointerRef.current.time
-    // Calibrated gentle drag response (was 0.75, now 0.28)
-    const progressDelta = (dx / window.innerWidth) * 0.28
+    const isMobile = window.innerWidth < 768
+    // Drag response calibrated for mobile so swiping feels natural like on web
+    const widthFactor = isMobile ? 320 : window.innerWidth
+    const progressDelta = (dx / widthFactor) * (isMobile ? 0.65 : 0.42)
     progressRef.current = (dragStartRef.current.progress - progressDelta + 1000) % 1.0
 
     if (dt > 10) {
       const stepDx = clientX - lastPointerRef.current.x
-      const rawVel = -(stepDx / window.innerWidth) * (16 / Math.max(dt, 16)) * 0.12
-      targetVelocityRef.current = Math.max(-0.0012, Math.min(0.0012, rawVel))
+      const speedScale = isMobile ? 0.35 : 0.18
+      const rawVel = -(stepDx / widthFactor) * (16 / Math.max(dt, 16)) * speedScale
+      const maxV = isMobile ? 0.0035 : 0.0018
+      targetVelocityRef.current = Math.max(-maxV, Math.min(maxV, rawVel))
       lastPointerRef.current = { x: clientX, y: clientY, time: now }
     }
   }, [])
@@ -520,12 +524,12 @@ function RibbonCarousel({ onPhotoClick, isViewerOpen = false }) {
       const speedMultiplier = isViewerOpen ? 0.18 : 1.0
 
       if (!isDraggingRef.current) {
-        // Serene, tranquil ambient drift
-        const ambientDrift = 0.00007 * speedMultiplier
+        // Dynamic, graceful ambient drift (responsive on mobile and desktop)
+        const ambientDrift = (isMobile ? 0.00032 : 0.00022) * speedMultiplier
         progressRef.current = (progressRef.current + ambientDrift + velocityRef.current * speedMultiplier + 1000) % 1.0
 
-        // Stronger, natural damping (0.86) to quickly settle and avoid hyper-fast spinning
-        velocityRef.current *= 0.86
+        // Smooth momentum damping for natural glide
+        velocityRef.current *= (isMobile ? 0.93 : 0.89)
         if (Math.abs(velocityRef.current) < 0.000005) velocityRef.current = 0
       }
 

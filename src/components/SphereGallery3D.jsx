@@ -1078,8 +1078,10 @@ export default function SphereGallery3D(props) {
 
     let raf = 0
     let prev = performance.now()
+    let isRunning = false
 
     const frame = () => {
+      if (!isRunning) return
       raf = requestAnimationFrame(frame)
 
       const now = performance.now()
@@ -1096,7 +1098,7 @@ export default function SphereGallery3D(props) {
       const grave = graveyardRef.current
       while (grave.length) gl.deleteTexture(grave.pop())
 
-      // Update real-time video textures
+      // Update real-time video textures (only when a new video frame has decoded)
       for (let j = 0; j < media.length; j++) {
         const m = media[j]
         if (m && m.isVideo && m.video) {
@@ -1104,24 +1106,24 @@ export default function SphereGallery3D(props) {
             m.texture = initVideoTex()
           }
           if (m.video.readyState >= 2 && m.texture) {
-            if (m.video.videoWidth && m.video.videoHeight) {
-              m.aspect = m.video.videoWidth / m.video.videoHeight
+            if (m.lastTime !== m.video.currentTime) {
+              m.lastTime = m.video.currentTime
+              if (m.video.videoWidth && m.video.videoHeight) {
+                m.aspect = m.video.videoWidth / m.video.videoHeight
+              }
+              gl.bindTexture(gl.TEXTURE_2D, m.texture)
+              gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+              gl.texImage2D(
+                gl.TEXTURE_2D,
+                0,
+                isGL2 ? gl.SRGB8_ALPHA8 : gl.RGBA,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                m.video
+              )
+              gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+              m.applied = true
             }
-            if (m.video.paused) {
-              m.video.play().catch(() => {})
-            }
-            gl.bindTexture(gl.TEXTURE_2D, m.texture)
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-            gl.texImage2D(
-              gl.TEXTURE_2D,
-              0,
-              isGL2 ? gl.SRGB8_ALPHA8 : gl.RGBA,
-              gl.RGBA,
-              gl.UNSIGNED_BYTE,
-              m.video
-            )
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-            m.applied = true
           }
         }
       }
@@ -1438,10 +1440,45 @@ export default function SphereGallery3D(props) {
       gl.disableVertexAttribArray(qLoc.aCorner)
     }
 
-    raf = requestAnimationFrame(frame)
+    const startLoop = () => {
+      if (isRunning) return
+      isRunning = true
+      prev = performance.now()
+      media.forEach((m) => {
+        if (m.video && m.video.paused) {
+          m.video.play().catch(() => {})
+        }
+      })
+      raf = requestAnimationFrame(frame)
+    }
+
+    const stopLoop = () => {
+      if (!isRunning) return
+      isRunning = false
+      cancelAnimationFrame(raf)
+      media.forEach((m) => {
+        if (m.video && !m.video.paused) {
+          m.video.pause()
+        }
+      })
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting) {
+          startLoop()
+        } else {
+          stopLoop()
+        }
+      },
+      { threshold: 0.02, rootMargin: '150px 0px' }
+    )
+    io.observe(host)
 
     return () => {
-      cancelAnimationFrame(raf)
+      io.disconnect()
+      stopLoop()
       ro.disconnect()
       canvas.removeEventListener('pointerdown', onPointerDown)
       canvas.removeEventListener('pointerleave', onLeave)

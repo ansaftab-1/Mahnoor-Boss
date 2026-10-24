@@ -278,12 +278,23 @@ class MeshScene {
   unbind = () => {}
 
   start() {
+    if (this.running || this.disposed) return
+    this.running = true
     this.lastT = performance.now()
     const loop = () => {
+      if (!this.running || this.disposed) return
       this.frameId = requestAnimationFrame(loop)
       this.step()
     }
     loop()
+  }
+
+  stop() {
+    this.running = false
+    if (this.frameId) {
+      cancelAnimationFrame(this.frameId)
+      this.frameId = null
+    }
   }
 
   setSize(width, height) {
@@ -469,7 +480,19 @@ export default function WobbleFence(props) {
     }
     sceneRef.current = scene
     scene.setSize(container.clientWidth, container.clientHeight)
-    scene.start()
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting) {
+          scene.start()
+        } else {
+          scene.stop()
+        }
+      },
+      { threshold: 0.02, rootMargin: '100px 0px' }
+    )
+    io.observe(container)
 
     const ro = new ResizeObserver(() => {
       if (container) {
@@ -479,7 +502,9 @@ export default function WobbleFence(props) {
     ro.observe(container)
 
     return () => {
+      io.disconnect()
       ro.disconnect()
+      scene.stop()
       scene.dispose()
       sceneRef.current = null
     }
